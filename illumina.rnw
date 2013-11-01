@@ -1,0 +1,1525 @@
+% $Header: /cvsroot/latex-beamer/latex-beamer/solutions/generic-talks/generic-ornate-15min-45min.en.tex,v 1.5 2007/01/28 20:48:23 tantau Exp $
+
+\documentclass{beamer}
+
+% This file is a solution template for:
+
+% - Giving a talk on some subject.
+% - The talk is between 15min and 45min long.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+  \usetheme{Warsaw}
+  % or ...
+
+  \setbeamercovered{transparent}
+  % or whatever (possibly just delete it)
+}
+
+
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+\ifdefined\knitrout
+  \renewenvironment{knitrout}{\begin{footnotesize}}{\end{footnotesize}}
+\else
+\fi
+
+\title[Analysis of Illumina microarray data] % (optional, use only with long paper titles)
+{Analysis of Illumina microarray data}
+
+
+
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+\author{\texorpdfstring{Mark~Dunning\newline\url{mark.dunning@cruk.cam.ac.uk}}{MarkDunning}}
+
+\institute[Bioinformatics Core] % (optional, but mostly needed)
+{
+
+  Cancer Research Uk\\
+  Cambridge Institute\\
+  Robinson Way\\
+  Cambridge \\
+}
+
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[Short Occasion] % (optional)
+{MPhil in Computational Biology}
+
+\subject{Talks}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\AtBeginSubsection[]
+{
+  \begin{frame}<beamer>{Outline}
+    \tableofcontents[currentsection,currentsubsection]
+  \end{frame}
+}
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+
+\begin{document}
+{
+\usebackgroundtemplate{\includegraphics[width=\paperwidth]{figs/criBackdrop.jpg}}
+\begin{frame}
+  \titlepage
+\end{frame}
+}
+\begin{frame}{Outline}
+  \tableofcontents
+  % You might wish to add the option [pausesections]
+\end{frame}
+
+
+% Since this a solution template for a generic talk, very little can
+% be said about how it should be structured. However, the talk length
+% of between 15min and 45min and the theme suggest that you stick to
+% the following rules:  
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+\section{Introduction}
+
+%\subsection*{About this talk}
+%\begin{frame}
+
+%In this talk I aim to
+
+%\begin{itemize}
+ %\item Highlight some of the issues in microarray analysis and how we tackle them
+ %\item Help you understand the output of the pipeline
+%\end{itemize}
+
+
+%\end{frame}
+
+<<install, eval=TRUE, keep.source=FALSE,echo=FALSE,results='hide'>>=
+suppressPackageStartupMessages(library(beadarrayExampleData))
+data(exampleBLData)
+data(exampleSummaryData)
+@
+<<addAnnot, eval=TRUE, echo=FALSE>>=
+
+exampleSummaryData <- suppressMessages(addFeatureData(exampleSummaryData, toAdd = c("SYMBOL", "GENOMICLOCATION", "PROBEQUALITY")))
+
+exampleSummaryData <- channel(exampleSummaryData, "G")
+
+
+@
+
+
+
+\subsection*{What are Illumina BeadArrays?}
+
+\begin{frame}[fragile]{A brief history of Illumina}
+\begin{columns}
+ \column{0.5\textwidth}
+
+Now best-known as a sequencing company, Illumina are just one of several companies offering whole-genome microarrays. 
+
+\begin{itemize}
+\item{\href{http://hapmap.ncbi.nlm.nih.gov/}{\underline{\color{blue}Hapmap}} (genotyping)}
+\item{\href{http://www.sanger.ac.uk/resources/software/genevar/}{\underline{\color{blue}GeneVar}} (expression)}
+\item{\href{http://molonc.bccrc.ca/aparicio-lab/research/metabric/}{\underline{\color{blue}Metabric}} (expression)}
+\item{\href{http://cancergenome.nih.gov/}{\underline{\color{blue}TCGA}} (methylation, genotyping)}
+\item{\href{http://www.nature.com/icogs/}{\underline{\color{blue}iCOGS}} (genotyping)}
+\end{itemize}
+ \column{0.5\textwidth}
+
+They have been the technology of choice at CRI since 2006
+<<echo=FALSE,fig.width=5,fig.height=5,warning=FALSE>>=
+metrics <- read.delim("data/MetricsData.txt")
+metrics <- metrics[!duplicated(strtrim(metrics$arrayIds,12)),]
+
+metrics$Date <- sub(x=metrics$Date,pattern="/09",replacement="/2009")
+#metrics <- merge(metrics,newArrays,all=T,sort=F)
+
+tmp1 <- strsplit(sapply(strsplit(as.character(metrics$Date)," "),"[",1),"/")
+
+quarter <- paste(sapply(tmp1,"[",3),cut(as.numeric(sapply(tmp1,"[",1)),breaks=4,labels=F),sep="-")
+
+year <- strtrim(quarter,4)
+
+library(lubridate)
+suppressPackageStartupMessages(library(reshape2))
+newArrays <- read.delim("data/newArrays.txt")
+dates <- dmy(unlist(lapply(strsplit(as.character(newArrays[,1]), " ", fixed=T),function(x) x[1])))
+inval <- which(is.na(dates))
+dates[inval] <- mdy(unlist(lapply(strsplit(as.character(newArrays[inval,1]), " ", fixed=T),function(x) x[1])))
+
+year <- c(year, year(dates))
+
+Q <- paste("Q",substr(quarter, 6,6),sep="")
+Q <- c(Q, paste("Q",cut(as.numeric(month(dates)),breaks=4,labels=F),sep=""))
+
+
+arrays <- melt(table(Q,year))
+ggplot(arrays, aes(x = Q, y = value,fill=as.factor(Q))) + geom_bar(stat="identity") + facet_wrap(~year)+ylab("Number of arrays run")
+
+@
+\end{columns}
+\end{frame}
+
+\begin{frame}{Are they still relevant?}
+\begin{itemize}
+\item{Wealth of data available online e.g. on \href{http://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GPL10558}{\underline{\color{blue}GEO}}}
+\item{Useful as a validation platform}
+\item{Methods are established and well-understood}
+\item{Cheaper? And easier access to equipment}
+\item{Some of the lessons learnt from microarray analysis can be applied to sequencing data}
+\item{Useful introduction to the world of Bioconductor}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Microarray recap}
+\begin{itemize}
+\item{Microarrays use \textit{hybridisation} to measure abundance of mRNA transcripts}
+\item{Pre-designed \textit{probes} attached to solid surface}
+\item{Use \textit{labels} to measure hybridization intensity}
+\item{\textit{Scanned} image translated into probe intensities}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Technology overview}
+  % - A title should summarize the slide in an understandable fashion
+  %   for anyone how does not follow everything on the slide itself.
+
+  \begin{itemize}
+\item Single-channel microarrays  
+\item 50 base-pair 'probes' with the same sequence are attached to a bead 
+\item Beads that have the same probe sequence are known as a \textit{bead-type}
+\item Beads are identified by Illumina using a decoding sequence
+ \end{itemize}
+\includegraphics[height=4cm,width=6cm]{figs/abead}
+\end{frame}
+
+\begin{frame}{Randomly-arranged arrays}
+\begin{itemize}
+ \item Arrays of randomly-arranged beads are constructed
+ \item The number of replicates of each bead-type follows a normal distribution
+ \item Around 20 replicates on most-recent arrays
+\end{itemize}
+\includegraphics[height=4cm,width=6cm]{figs/beadarrangement}
+ 
+\end{frame}
+
+\begin{frame}{Combinations of arrays and nomenclature}
+\begin{columns}
+ \column{0.5\textwidth}
+\begin{itemize}
+ \item 'Refseq' chips with 24,000 bead-types per array, 8 arrays per chip
+ \item WG- chips with 48,000 bead-types per array, 6 arrays per chip
+ \item HT-12 chips with 48,000 bead-types per array, 12 arrays per chip
+ \item Each chip also has an annotation 'version' (v1, v2, v3, v4)
+\end{itemize}
+ \column{0.5\textwidth}
+\includegraphics[height=4cm,width=6cm]{figs/chiptypes}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Example}
+Observations for Gene X on Illumina and older array technologies
+
+\includegraphics[height=8cm,width=12cm]{figs/BeadPositions}
+\end{frame}
+
+\begin{frame}{Example}
+Consider a technical failure on one of the arrays
+\includegraphics[height=8cm,width=12cm]{figs/BeadPositionsWArtifact}
+\end{frame}
+
+
+\subsection*{Output formats}
+
+\begin{frame}[t]{Output formats}
+TIFF image representation of the array surface
+\includegraphics[height=5cm,width=10cm]{figs/nicearray}
+
+\end{frame}
+
+\begin{frame}[t]{Output formats}
+\begin{columns}
+ \column{0.5\textwidth}
+A text description of the bead locations, unique to each array. 
+\includegraphics[height=6cm,width=4cm]{figs/beadleveltxt}
+ \column{0.5\textwidth}
+Know as \textit{bead-level} data.
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Output formats}
+\textit{annotation} file from Illumina that gives the probe sequences. Shared for experiments using the same chip-type.
+
+<<echo=FALSE>>=
+library(illuminaHumanv2.db)
+options(width=50)
+data.frame(Code=7650767, Sequence ="ACGACCTCCTGTTGGAC.....",Symbol="LAYN")
+@
+
+
+We will revisit these later...
+\end{frame}
+
+
+
+\begin{frame}{Summary-level data}
+Additionally, BeadStudio or GenomeStudio software can be used on the scanned data
+\includegraphics[height=4cm,width=10cm]{figs/BeadStudio}
+
+
+\end{frame}
+
+\subsection*{Illumina analysis Overview}
+\begin{frame}{Starting point for analysis}
+The analyst may have a choice over what data to take as a starting point
+ \begin{itemize}
+  \item Raw images
+  \item Bead-level data - vary number of observations for a bead-type on each array and pre-computed intensities
+  \item Bead-summary - One value for each bead-type on each array. i.e. an 'Expression Matrix'
+
+  \item Starting with raw, or bead-level data gives more flexiblity in analysis
+  \item Bead-summary data fit in with standard Bioconductor tools
+
+ \end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}{Workflow Overview}
+\includegraphics[height=5cm,width=10cm]{figs/CombinedFigure1WithAnno}
+
+
+From \href{http://tinyurl.com/omdru97}{\underline{\color{blue}Ritchie et al}}
+\end{frame}
+
+\section{Pre-processing}
+
+%\subsection*{General Questions}
+
+%\begin{frame}{Quality Control - General Questions}
+
+%I have a new dataset, what do I look at first?
+
+ % \begin{itemize}
+
+  %  \item
+  %How does the experiment compare to previous ones
+   % \item    
+  %How do the arrays look? Any spatial problems?
+   % \item
+  %How similar are the arrays, any obvious outliers?
+
+   % \item
+%How well do they cluster, does it make biological sense?
+%\item
+%Can we see any potential swaps or technical effects?
+%\item
+%Did the \textit{array} fail?, or the \textit{sample}?
+%\item
+%Are we happy to continue to differential expression?
+ %   \end{itemize}
+%\end{frame}
+
+
+
+
+
+\subsection*{Scanner Metrics}
+
+\begin{frame}[t]{Scanner Metrics}
+%% 
+\begin{columns}
+\column{.5\textwidth}
+\begin{itemize}
+\item The scanner can give lots of useful quality control information 
+\item P95 = 95th intensity percentile (x-axis)
+\item P05 = 5th intensity percentile (y-axis)
+\item P95:P05 Ratio or signal to noise ratio, red line = ideal
+\end{itemize}
+\includegraphics[height=1.5cm,width=5cm]{figs/p95density}
+\column{.5\textwidth}
+\includegraphics[height=5cm,width=5cm]{figs/p95historical}
+\end{columns}
+\end{frame}
+
+
+
+\subsection*{Image Processing}
+\begin{frame}{Image Processing}
+\begin{columns}
+ \column{.5\textwidth}
+\begin{itemize}
+ \item Calculate foreground \& background
+ \item Background correct
+ \item The resulting values are found in the text files
+ \item The steps can be repeated in beadarray
+ \item \textit{Usually we start with these values}
+\end{itemize}
+\column{.5\textwidth}
+\includegraphics[height=5cm,width=5cm]{figs/imageprocessing}
+\end{columns}
+Full, gory, details in \href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2880029/}{\underline{\color{blue}Smith et al}}
+\end{frame}
+
+\begin{frame}{Control Plots}
+\begin{itemize}
+ \item Illumina design probes for housekeeping genes \textbf{Positive controls}
+ \item They also have probes that should not hybridise to the target genome \textbf{Negative controls}
+ \item The difference between these controls is a measure of signal level and the potential to detect differential expression
+ \item The negative controls are also use to assess whether a given gene-probe is expressed / detected.
+\end{itemize}
+
+
+\end{frame}
+
+\begin{frame}[t]{The good..} 
+\includegraphics[width=8cm,height=6cm]{figs/thegood}
+\end{frame}
+
+\begin{frame}[t]{The bad..}
+\includegraphics[width=8cm,height=6cm]{figs/thebad}
+\end{frame}
+
+\begin{frame}[t]{and the ugly..}
+\includegraphics[width=8cm,height=6cm]{figs/theugly}
+\end{frame}
+
+
+
+\subsection*{Bead-level processing}
+
+\begin{frame}[fragile]{Dealing with multiple beads}
+
+\begin{columns}[t]
+
+\column{.5\textwidth}
+
+\begin{itemize}
+\item Having many replicates of each bead-type is one of the strengths of the BeadArray platform
+\item As is random array design
+\item But ultimately we want to compare one observation for each bead type between arrays
+\end{itemize}
+
+\column{.5\textwidth}
+
+<<countHist, fig.width=5, fig.height=5,echo=FALSE>>=
+qplot(nObservations(exampleSummaryData)[,1], geom="histogram",binwidth =1)+ labs(title="Example Array") + xlab("Number of Beads")
+
+@
+\end{columns}
+
+\end{frame}
+
+
+
+
+\begin{frame}{Illumina outlier removal}
+
+Illumina use an algorithm for removing unreliable beads using difference from the un-logged median. We prefer to use this method on the log${_2}$ scale
+
+<<outlierExampleLocations, fig.width=12, fig.height=5,echo=FALSE>>=
+dat <- exampleBLData[[1]]
+oList <- illuminaOutlierMethod(inten = dat[,4], probeList=dat[,1])
+
+oTable <- table(dat[oList,1])
+
+
+mostOut <- names(which.max(oTable))
+
+inten <-  dat[which(dat[,1] == mostOut),4]
+
+M <- median(inten)
+MA <- mad(inten)
+
+mfac <- c(-3,-2,0,2,3)
+
+breaks <- M +(MA * mfac)
+
+Outlier <- inten > M + 3*MA | inten < M - 3 *MA
+
+Reps <- data.frame(Intensity = inten, Replicate = 1:length(inten), Outlier = Outlier)
+
+hline.dat <- data.frame(z=breaks, col=abs(mfac))
+
+p2 <- ggplot(Reps,aes(x = Replicate, y = inten ,col=Outlier)) + geom_point() + geom_hline(yintercept =breaks) + xlab("Bead Replicate") + ylab("Intensity") +labs(title="Bead Intensities")
+
+p2
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{Illumina outlier removal}
+
+Where the outliers are located could also give clues about potential artefacts
+<<outlierExampleReps, fig.width=12, fig.height=5,echo=FALSE>>=
+
+dat <- exampleBLData[[1]]
+
+oList <- illuminaOutlierMethod(inten = dat[,4], probeList=dat[,1])
+
+oTable <- table(dat[oList,1])
+
+
+mostOut <- names(which.max(oTable))
+
+subData <- dat[which(dat[,1] == mostOut),]
+
+subData <- data.frame(X = subData[,2], Y = subData[,3], Intensity = subData[,4], Replicate = 1:length(inten))
+
+p1 <- ggplot(subData, aes(x = X, y = Y, size=Intensity,label=Replicate))+ geom_point() + labs(title = "Bead Locations")
+
+p1
+
+@
+
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[t]{Spatial artefacts}
+
+
+Sometimes obvious artefacts can be apparent on the TIFF image itself
+
+\includegraphics[height=4cm,width=10cm]{figs/badarray}
+
+\textit{Would you trust any measurements taken on the right of this array?}
+\end{frame}
+
+<<imageExample, echo=FALSE,eval=TRUE,results='hide'>>=
+
+load("data/imageExample.rda")
+
+@
+
+
+
+\begin{frame}[fragile]{Tools for assessing spatial artefacts}
+
+The \texttt{imageplot} function can create a false-colour representation of the array surface. Intensities of beads within a window are averaged and displayed.
+
+<<fig.width=10,fig.height=4,echo=FALSE>>=
+imageplot(bld, array=3)
+@
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Tools for assessing spatial artefacts}
+
+Outliers for each bead type can be calculated and plotted
+
+<<width=10,fig.height=4,echo=FALSE>>=
+outlierplot(bld, array=3)
+@
+
+\end{frame}
+
+\begin{frame}{BASH}
+
+\begin{itemize}
+\item The BASH method can be used to mask beads within spatial artefacts
+\item Adapted from Harshlight method first applied to Affymetrix arrays
+\item BASH looks for clusters of outliers close together
+\item Weights are assigned to each bead; 0 = exclude and 1 = include
+%\item Gradients can be smoothed with HULK
+\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{BASH}
+
+<<fig.width=10,fig.height=4,echo=FALSE>>=
+showArrayMask(bld, array=3)
+@
+\begin{itemize}
+\item Spatial investigations only possible with bead-level data
+\item May be missed as the cause of unreliable data if dealing with summary data
+\item Persistent manufacture or processing defects may also be overlooked
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Producing summary values}
+For each array...
+\begin{itemize}
+\item Identify spatial artefacts and exclude any beads found within
+\item Group bead intensities according to Code (corresponding to a bead-type / gene)
+\item For each Code
+\begin{itemize}
+\item log2 transform intensities
+\item Calculate mean and standard error 
+\end{itemize}
+\item Repeat for next array
+\end{itemize}
+
+\end{frame}
+
+
+%\begin{frame}[t]{Tools for assessing spatial artefacts}
+
+%\begin{columns}
+ %\column[t]{0.5\textwidth}
+
+%\begin{itemize}
+%\item In R we can read and display for the images in a more convenient form
+
+% \item  We use BASH to identify spatial artefacts to 'rescue' good data from an arrays
+
+%\item The HULK method is used to smooth out gradient effects
+%\end{itemize}
+
+% \column[t]{0.5\textwidth}
+
+%\includegraphics[height=4cm,width=4cm]{beadarraySpatial}
+
+%\end{columns}
+%\end{frame}
+%%\subsection*{Control Probes}
+
+
+%\subsection*{Summarisation}
+%\begin{frame}[t]{Summarisation}
+%\begin{itemize}
+% \item A transformation function. e.g. log2
+% \item A method for removing outliers
+% \item A function to compute average and variability%
+%\end{itemize}
+ 
+%\end{frame}
+
+\subsection*{Summary level analysis}
+
+\begin{frame}
+\includegraphics[height=5cm,width=10cm]{figs/workflow.pdf}
+
+Entry-point for other microarray analysis packages
+\end{frame}
+
+\begin{frame}{Starting with summarized data}
+
+\begin{itemize}
+ \item Data exported from GenomeStudio are already summarized, but un-logged
+ \item Ensure that data are not normalised
+ \item Choose \textit{probe-profile} data
+ \item Summarized data can be read using limma, lumi or beadarray
+ \item \textbf{Same analyses can be used on data summarized using beadarray, or exported from GenomeStudio}
+ \item Summarized data can also be obtained from online repositories GEO or ArrayExpress
+\end{itemize}
+
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[t]{Quality Control - Summarised beads}
+\includegraphics[c,width=10cm,height=6cm]{figs/boxPlotNoNorm1}
+\end{frame}
+
+\begin{frame}[t]{Why normalise?}
+We want to be measuring \textit{biological} rather than \textit{technical} variation.
+\includegraphics[c,width=10cm,height=6cm]{figs/boxPlotNoNorm2}
+\end{frame}
+
+
+\begin{frame}[fragile]{Normalisation of Illumina arrays}
+
+\begin{itemize}
+\item \href{http://www.biomedcentral.com/1471-2164/11/349}{\underline{\color{blue}Schmid et al}} review available methods and give guidelines for choosing most-appropriate method. 
+\item The most popular is probably \textbf{Quantile normalisation}, or some variation on this.
+\end{itemize}
+
+<<warning=FALSE,fig.width=10,fig.height=4,echo=FALSE>>=
+
+suppressPackageStartupMessages(library(limma))
+suppressPackageStartupMessages(library(reshape2))
+suppressPackageStartupMessages(library(gridExtra))
+
+myMat <- melt(exprs(exampleSummaryData)[,1:5])
+target <- normalizeQuantiles(exprs(exampleSummaryData)[,1:5])[,1]
+p1 <- ggplot(myMat, aes(x=value,col=Var2)) + geom_density() + xlim(4,8)+ theme(legend.position="none")
+p2 <-  qplot(target,geom="density",cex=1.5)+ xlim(4,8)+ theme(legend.position="none")
+grid.arrange(p1,p2, ncol=2)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{Quantile Normalization}
+Consider the following matrix of values to be normalised
+<<echo=FALSE>>=
+df <- data.frame(Array1 = c(1,3,9,2,4), Array2 = c(3,4,2,1,9), Array3 = c(9,1,5,7,6))
+rownames(df) <- LETTERS[1:nrow(df)]
+df
+@
+
+Genes A, B, C, D and E measured on three arrays
+\end{frame}
+
+\begin{frame}[fragile]{Quantile Normalization - Step 1}
+Determine ranks of each column
+\begin{columns}
+\column[t]{0.5\textwidth}
+<<echo=FALSE>>=
+df
+@
+\column[t]{0.5\textwidth}
+<<echo=FALSE>>=
+rks <- apply(df, 2, function(x) paste("Rank",rank(x,ties.method="min"),sep=""))
+rks
+@
+\end{columns}
+
+\end{frame}
+
+\begin{frame}[fragile]{Quantile Normalization - Step 2}
+Sort each column Largest...Smallest
+\begin{columns}
+\column[t]{0.5\textwidth}
+Original data
+<<echo=FALSE>>=
+df
+@
+\column[t]{0.5\textwidth}
+Sorted data
+<<echo=FALSE>>=
+apply(df, 2,sort)
+@
+\end{columns}
+Then calculate target distribution by averaging the sorted rows
+<<echo=FALSE>>=
+target <- round(rowMeans(apply(df, 2,sort)),3)
+names(target) <- paste("Rank", 1:length(target),sep="")
+target
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{Quantile Normalization - Step 3}
+\begin{columns}
+\column[t]{0.5\textwidth}
+Go back to the rank matrix
+<<echo=FALSE>>=
+rks
+@
+
+Substitue with values from the target distribution
+<<echo=FALSE>>=
+target
+@
+\column[t]{0.5\textwidth}
+<<echo=FALSE>>=
+rks[,1] <- gsub("Rank1",target["Rank1"],rks[,1])
+rks
+@
+\end{columns}
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Quantile Normalization - Step 3}
+\begin{columns}
+\column[t]{0.5\textwidth}
+Go back to the rank matrix
+<<echo=FALSE>>=
+rks
+@
+
+Substitue with values from the target distribution
+<<echo=FALSE>>=
+target
+@
+\column[t]{0.5\textwidth}
+<<echo=FALSE>>=
+rks[,1] <- gsub("Rank2",target["Rank2"],rks[,1])
+rks
+@
+\end{columns}
+\end{frame}
+
+
+\begin{frame}[fragile]{Quantile Normalization - Step 3}
+\begin{columns}
+\column[t]{0.5\textwidth}
+Go back to the rank matrix
+<<echo=FALSE>>=
+rks
+@
+
+Substitue with values from the target distribution
+<<echo=FALSE>>=
+target
+@
+\column[t]{0.5\textwidth}
+<<echo=FALSE>>=
+rks[,1] <- gsub("Rank3",target["Rank3"],rks[,1])
+rks
+@
+\end{columns}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Quantile Normalization - Step 3}
+\begin{columns}
+\column[t]{0.5\textwidth}
+Go back to the rank matrix
+<<echo=FALSE>>=
+rks
+@
+
+Substitue with values from the target distribution
+<<echo=FALSE>>=
+target
+@
+\column[t]{0.5\textwidth}
+<<echo=FALSE>>=
+rks[,1] <- gsub("Rank4",target["Rank4"],rks[,1])
+rks
+@
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Quantile Normalization - Step 3}
+\begin{columns}
+\column[t]{0.5\textwidth}
+Go back to the rank matrix
+<<echo=FALSE>>=
+rks
+@
+
+Substitue with values from the target distribution
+<<echo=FALSE>>=
+target
+@
+\column[t]{0.5\textwidth}
+<<echo=FALSE>>=
+rks[,1] <- gsub("Rank5",target["Rank5"],rks[,1])
+rks
+@
+\end{columns}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[fragile]{Quantile Normalization - Summary}
+We then repeat to get the normalized matrix
+
+<<echo=FALSE>>=
+for(i in 1:3){
+rks[,i] <- gsub("Rank1",target["Rank1"],rks[,i])
+rks[,i] <- gsub("Rank2",target["Rank2"],rks[,i])
+rks[,i] <- gsub("Rank3",target["Rank3"],rks[,i])
+rks[,i] <- gsub("Rank4",target["Rank4"],rks[,i])
+rks[,i] <- gsub("Rank5",target["Rank5"],rks[,i])
+}
+rks <- as.data.frame(rks)
+rownames(rks) <- rownames(df)
+
+@
+
+
+\begin{columns}
+\column[t]{0.5\textwidth}
+Original data
+<<echo=FALSE>>=
+df
+@
+\column[t]{0.5\textwidth}
+Normalized data
+<<echo=FALSE>>=
+rks
+@
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{The code}
+<<eval=FALSE>>=
+df <- data.frame(Array1 = c(1,3,9,2,4), Array2 = c(3,4,2,1,9), Array3 = c(9,1,5,7,6))
+rownames(df) <- LETTERS[1:nrow(df)]
+rks <- apply(df, 2, function(x) paste("Rank",rank(x,ties.method="min"),sep=""))
+target <- round(rowMeans(apply(df, 2,sort)),3)
+names(target) <- paste("Rank", 1:length(target),sep="")
+for(i in 1:ncol(df)){
+  for(nm in names(target)){
+    rks[,i] <- gsub(nm,target[nm],rks[,i])  
+      }
+}
+norm <- as.data.frame(rks)
+@
+\end{frame}
+
+\begin{frame}{Background correction}
+\begin{columns}
+\column{.5\textwidth}
+See \href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3001098/}{\underline{\color{blue}Shi et al}}
+
+\begin{itemize}
+\item If a gene is not being expression, then its intensity on the array would be zero
+\item ...but it isn't
+\item Illumina attempt to measure \textit{non-specific binding} using negative controls
+\item but they do a bad job (see right)
+\end{itemize}
+\column{.5\textwidth}
+\includegraphics[width=5cm,height=4cm]{figs/bgNorm}
+\end{columns}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Batch Effects}
+Experiment with Brain and Reference RNA hybridised at different labs
+<<echo=FALSE,warning=FALSE,message=FALSE,fig.width=10,fig.height=5>>=
+suppressPackageStartupMessages(library(MAQCsubsetILM))
+suppressPackageStartupMessages(library(limma))
+suppressPackageStartupMessages(library(gridExtra))
+
+
+data(refA);data(refB);data(refC);data(refD)
+gse = combine(refA, refB, refC, refD)
+sites = pData(gse)[,2]
+shortlabels = substr(sampleNames(gse), 7,8)
+rnasource = pData(gse)[,3]
+levels(rnasource) = c("UHRR", "Brain", "UHRR75", "UHRR25")
+gse.batchcorrect <- removeBatchEffect(log2(exprs(gse)), batch=sites)
+
+d <- dist(t(exprs(gse)))
+pc <- princomp(d)
+
+d2 <- dist(t(gse.batchcorrect))
+pc2 <- princomp(d2)
+
+Lab <- paste("Lab",sites,sep="")
+
+p1<-qplot(pc$loadings[,1], pc$loadings[,2],col=rnasource,pch=as.factor(Lab),main="No Correction")+xlab("PC1") + ylab("PC2")
+p2<-qplot(pc2$loadings[,1], pc2$loadings[,2],col=rnasource,pch=as.factor(Lab), main="With Correction")+xlab("PC1") + ylab("PC2")
+grid.arrange(p1,p2,ncol=2)
+
+@
+
+
+See \href{http://www.nature.com/nrg/journal/v11/n10/abs/nrg2825.html}{\underline{\color{blue}Leek et al}} for comprehensive review
+
+\end{frame}
+
+\begin{frame}{Normalisation Options}
+
+\begin{itemize}
+\item The \href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3001098/}{\underline{\color{blue}\texttt{neqc}}} method from limma combines quantile normalisation with a more sophisticated way of dealing with non-specific binding
+\item Also \href{http://nar.oxfordjournals.org/content/36/2/e11}{\underline{\color{blue}\texttt{vst}}} and \texttt{rsn} in lumi
+\item Ideally one would evaluate different methods
+\item May also need batch effect correction - see \texttt{sva} package in Bioconductor
+\item Case-study of batch effects on Illumina data provided by \href{http://www.biomedcentral.com/1471-2164/11/134}{\underline{\color{blue}Kitchen et al}}
+
+\end{itemize}
+
+
+\end{frame}
+
+\section{Differential Expression Walkthrough}
+\begin{frame}[t]{Differential Gene Expression}
+
+  \begin{columns}[c]
+  \column{.5\textwidth}
+
+  \begin{itemize}
+  \item Differential expression is done on per-probe basis
+  \item Compare values in each sample group using (modified version of) 't-test'
+    \begin{itemize}
+    \item fold-change  
+    \item p-value
+    \item log-odds or B-statistic
+    \end{itemize}
+
+\end{itemize}
+  \column{.5\textwidth}
+\includegraphics[width=5cm, height=5cm]{figs/DEboxplot}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{1. Understanding the data}
+Normalised, processed data tend to be represented in a standard way in Bioconductor. 
+
+\begin{itemize}
+\item \texttt{assayData} a series of N by S matrices
+ \begin{itemize}
+      \item exprs
+      \item se.exprs
+
+    \end{itemize}
+\item \texttt{featureData} matrix of \texttt{N} rows to hold probe annotation accessed using \texttt{fData}
+\item \texttt{phenoData} matrix of \texttt{S} rows to hold sample annotation accessed using \texttt{pData}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{assayData}
+<<echo=FALSE>>=
+normData <- normaliseIllumina(exampleSummaryData[,-c(7,8)])
+@
+
+<<viewExprs, comment=NA>>=
+exprs(normData)[1:5,1:3]
+
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{featureData}
+Each row matches a row in the expression matrix. Can have as many columns as you like.
+
+<<fData, comment=NA>>=
+fData(normData)[1:5,]
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{phenoData}
+Each row matches a \textbf{column} in the expression matrix. Can have as many columns as you like. Sample group information is commonly stored in this matrix.
+
+<<pData, comment=NA>>=
+pData(normData)[1:3,]
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{2. Build the design matrix}
+In my analysis I want to compare Brain and UHRR groups
+<<warning=FALSE,message=FALSE>>=
+library(limma)
+grps <- pData(normData)[,2]
+grps
+design <- model.matrix(~0+as.factor(grps))
+head(design)
+colnames(design) <- c("Brain", "UHRR")
+@
+
+
+\end{frame}
+
+\begin{frame}[fragile]{3. Fit the linear model}
+Fit the linear model to the expression matrix
+<<>>=
+fit <- lmFit(exprs(normData), design)
+fit
+names(fit)
+head(fit$coefficients,2)
+
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{3. Fit the linear model}
+Fit the linear model to the expression matrix
+<<>>=
+names(fit)
+head(fit$coefficients,2)
+
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{A sanity check}
+
+<<>>=
+grps
+mean(exprs(normData)[1,1:6])
+mean(exprs(normData)[1,7:10])
+fit$coefficients[1,]
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{4. Make the contrast Matrix}
+<<>>=
+cMat <- makeContrasts(DE = Brain - UHRR, levels=design)
+cMat
+fit2 <- contrasts.fit(fit, cMat)
+head(fit2$coefficients,2)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+<<>>=
+head(fit2$coefficients,2)
+fit$coefficients[1:2,1] - fit$coefficients[1:2,2]
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{5. Annotate}
+For convenience, we attach the probe annotations to the data.
+<<>>=
+fit2$genes <- fData(normData)
+@
+How we dervie the annotations will be the subject of the next section...
+\end{frame}
+
+\begin{frame}[fragile]{5. Do the Empirical Bayes}
+
+<<>>=
+efit <- eBayes(fit2)
+names(efit)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{6. Tabulate the results}
+
+<<>>=
+topTable(efit,n=2)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{7. Visualise}
+
+<<fig.width=10,fig.height=5>>=
+volcanoplot(efit)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]{Another sanity check}
+<<fig.width=10,fig.height=5>>=
+boxplot(exprs(normData)["ILMN_1675947",]~grps)
+@
+
+\end{frame}
+
+\begin{frame}[fragile]
+<<fig.width=10,fig.height=5>>=
+topDE <- order(efit$lods,decreasing=T)[1:100]
+heatmap(as.matrix(exprs(normData)[topDE,]))
+@
+
+\end{frame}
+
+%\begin{frame}[t]{Array Weights}
+%\begin{columns}
+%\column{.5\textwidth} 
+
+%\begin{itemize}
+ %\item Weights can be used to quantify reliability
+% \item Each array is scored based on similarity with others
+% \item If all weights are 1, all arrays are equally reliable
+% \item Weights are incorporated into differential expression  
+% \item Reduces the need to remove bad arrays
+%\end{itemize}
+% \column{.5\textwidth}
+%\includegraphics[width=5cm, height=5cm]{weights}
+%\end{columns}
+ %\end{frame}
+
+
+%\subsection*{Multiple Testing}
+%\begin{frame}{Multiple Testing}
+
+
+%\begin{itemize}
+% \item Lots of tests being performed, one for each gene, and for each contrast. 
+% \item With a microarray of 40,000 probes and p-value of 0.05, 8000 genes expected to be DE by chance
+% \item Multiple testing is a way of addressing this, producing \textit{adjusted p-values}
+% \item Our chosen method is to control the false discovery rate \textbf{FDR}
+% \item This gives a balance between the number of true findings and acceptable number of false positives
+% \item FDR of 0.05 => 5\% of your gene list significant by chance,..rather than 5\% of the array
+%\end{itemize}
+
+%\end{frame}
+
+\section{Probe Annotation}
+\begin{frame}{Why annotate probes?}
+\begin{itemize}
+ \item By default, each probe is assigned a numeric Code (\textit{ArrayAddress}) if analysed at the bead-level, or a manufactuer identifer (\textit{ILMN\_})
+ \item The IDs need to be converted so that we could recognise our favourite genes in the data. e.g. TP53, BRCA1
+ \item Or to relate the findings to biological function
+ \item Is this the end of the story?
+\end{itemize}
+\end{frame}
+
+%%\subsection*{Gene lists}
+%%\begin{frame}[t]{Gene Lists}
+%%\begin{itemize}
+%%\item Annotation can be added to different expression output
+%%\end{itemize}
+
+%%\includegraphics[width=10cm,height=2cm]{figs/genelist}
+
+%%\includegraphics[width=10cm,height=2cm]{figs/genelist2}
+
+%%\textbf{What if probes for the same gene disagree?}
+ 
+%%\end{frame}
+
+\begin{frame}{A motivating example}
+\begin{columns}[c]
+   \column{.5\textwidth}
+\begin{itemize}
+ \item Starting with \href{http://www.nature.com/nature/journal/v406/n6797/full/406747a0.html}{\underline{\color{blue}Perou et al}} (right) various papers have classified breast cancer based on microarray profiles. They seem to agree on five subtypes, which have different prognosis and treatment options 
+%\item Basal (mostly ER negative)
+%\item Her2 (high ERBB2 expression)
+%\item Luminal A (ER positive good prognosis)
+%\item Luminal B (ER positive worse prognosis)
+%\item 'Normal-like'
+\end{itemize}
+\column{.5\textwidth}
+\includegraphics[width=5cm,height=5cm]{figs/classification}
+
+\end{columns}
+\end{frame} 
+
+
+\begin{frame}{Expression of ERBB2 in a breast cancer study}
+\begin{columns}[c]
+   \column{.5\textwidth}
+\begin{itemize}
+ \item The ERBB2 oncogene is important in breast cancer, so we want to be able to measure it accurately
+ \item In the \href{http://www.nature.com/nature/journal/v486/n7403/full/nature10983.html}{\underline{\color{blue}METABRIC}} study, three probes for ERBB2 on the microarray
+ \item Simple approach would be to average values for all three probes
+\end{itemize}
+\column{.5\textwidth}
+\includegraphics[width=5cm,height=5cm]{figs/erbb2levels}
+\end{columns} 
+
+\end{frame}
+
+\begin{frame}{Location of ERBB2 probes}
+
+\includegraphics[width=10cm,height=5cm]{figs/erbb2probes}
+ 
+
+\end{frame}
+
+\begin{frame}{Difference between subtypes}
+\includegraphics[width=10cm,height=5cm]{figs/erbb2subtypes}
+\end{frame}
+
+\begin{frame}{Using external data}
+\includegraphics[width=10cm,height=5cm]{figs/erbb2heatmaps}
+\end{frame}
+
+\begin{frame}[t]{An annotation pipeline}
+\includegraphics[width=10cm,height=5cm]{figs/annotPipeline}
+\end{frame}
+
+<<annotBoxplot, echo=FALSE, eval=TRUE>>=
+someArrays <- exampleSummaryData[,1:4]
+
+ids <- as.character(featureNames(someArrays))
+
+Quality <- unlist(mget(ids, illuminaHumanv3PROBEQUALITY, ifnotfound = NA))
+
+
+Quality <- gsub("*", "", Quality, fixed = TRUE)
+
+fData(someArrays) <- cbind(fData(someArrays), Quality)
+@
+
+
+\begin{frame}{Effect on intensity}
+\begin{columns}[c]
+   \column{.5\textwidth}
+\begin{itemize}
+\item As expected Perfect and Good probes highest intensity
+\item Less signal for Bad and No match
+\item Although some exceptions..
+\item Associations also possible due to SNPs within probes
+\end{itemize}
+\column{.5\textwidth}
+\includegraphics[width=5cm,height=5cm]{figs/IntensityvsAnnot}
+\end{columns}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}{Annotation conclusions}
+ \begin{itemize}
+  \item Annotation quality is known in advance
+  \item Annotation can be used to remove uninformative data for filtering and reducing number of tests performed
+  \item Similar in spirit to removing non-expressed probes
+  \item Surprising results could be explained by annotation problems; missing genes from top hits, or unexpected findings
+  \item If you \textit{must} collapse to the gene-level, consider the annotation whilst doing so. \textbf{Please don't just average}  
+ \end{itemize}
+Similar issues for \href{http://nar.oxfordjournals.org/content/33/20/e175.full}{\underline{\color{blue}Affymetrix}} arrays
+\end{frame}
+
+\begin{frame}[fragile]{In practice}
+What I \textit{should} have done before
+
+<<>>=
+quals <- fData(normData)$PROBEQUALITY
+bestProbes <- quals == "Perfect"
+fit.new <- lmFit(exprs(normData)[bestProbes,], design)
+
+@
+\end{frame}
+
+\begin{frame}{Where does the annotation come from?}
+
+\begin{itemize}
+\item The annotation slot in the bead-level data is the link to the correct annotation package
+\item If unsure, the \texttt{suggestAnnotation} function will try to advise
+\item \texttt{Humanv3} tells beadarray to use illuminaHumanv3.db for annotation
+\item If installed, the \texttt{illuminaHumanv3.db} will be loaded
+\item The control probes can then be identified and IDs converted automatically
+\end{itemize}
+
+\end{frame}
+
+%%\section{Analysis in Bioconductor}
+
+%%\begin{frame}[fragile]{BeadArray analysis in Bioconductor}
+
+%%\begin{itemize}
+%%\item The beadarray family
+	%%\begin{itemize}
+		%%\item \texttt{beadarray}; core package
+		%%\item \texttt{beadarrayExampleData}; example data to use with beadarray
+		%%\item \texttt{illuminaHuman}, \texttt{illuminaMouse}; annotation packages
+		%%\item \texttt{BeadDataPackR}, data compression
+	%\end{itemize}
+
+%%\item \texttt{BeadArrayUseCases}; example dataset and examples using various packages
+
+%%\item The lumi family
+%%	\begin{itemize}
+%%		\item \texttt{lumi}; core functionality
+%%		\item \texttt{lumiHumanAll}; annotation packages
+%%	\end{itemize}
+
+%%\item limma
+
+
+%%\end{itemize}
+
+
+%%\end{frame}
+
+%%\begin{frame}{Reading bead-level data}
+  
+%%\begin{itemize}
+%%\item \texttt{readIllumina} will try and read any Illumina files from disk
+%%\item Will read any assay type, and BeadScan or iScan output
+%%\item Chips are assumed to be in sub-folders
+%\item Sample sheet can be used to assign arrays to samples or groups
+%%\end{itemize}
+
+%%\end{frame}
+
+%%\begin{frame}{Bead-level file types}
+%%The following Illumina file types can be recognised by beadarray
+%%\begin{itemize}
+%%  \item \texttt{.txt} or \texttt{\_perBeadFile.txt} Data for all decoded beads
+%%  \item \texttt{.locs} Locations of all beads 
+%%  \item \texttt{.sdf} Physical properties of chip
+%%  \item \texttt{.tif} To repeat image processing 
+%%  \item \texttt{Metrics.txt} Scanner metrics
+%%\end{itemize}
+%%NB
+%%\begin{itemize}
+%%\item iScan machines produce two images (\textit{'swathes'}) and text files per section so require special treatment by beadarray
+%%\item TIFF should be exported rather than jpeg
+%%\item idat files can be read as a last resort
+%%\end{itemize}
+
+%%\end{frame}
+
+
+%\begin{frame}{Representation of bead-level data}
+%\begin{itemize}
+%\item{Differing numbers of beads between arrays mean a special structure is needed}
+%\item{Object is divided into different parts}
+%	\begin{itemize}
+%		\item \texttt{beadData} per-bead data
+%		\item \texttt{sectionData} per-section (array) data. e.g. Scanner Metrics%
+%		\item \texttt{experimentData} experiment-wide data. e.g. Annotation type
+%	\end{itemize}
+%\end{itemize}	
+%\end{frame}
+
+
+
+
+
+
+
+%%\begin{frame}{Summarizing the data}
+%%To summarize bead-level data, the following are required;
+
+%%\begin{itemize}
+%% \item A transformation function. e.g. log2
+%% \item A method for removing outliers
+%% \item A function to compute average (e.g. mean) and variability (e.g. sd)
+%% \item For each array, \texttt{summarize} will apply the transformation to each bead-type in turn, remove outliers and compute the summary stats.
+%% \item ID conversion is also performed during summarization
+%%\end{itemize}
+%%Much flexibility when dealing with data other than single-channel expression
+%%\end{frame}
+
+
+%%\begin{frame}{Representation of summary data}
+%%The ExpressionSetIllumina object for \texttt{N} probes and \texttt{S} samples will hold the following data
+%%\begin{itemize}
+%%  \item \texttt{assayData} a series of N by S matrices
+%%   \begin{itemize}
+%%      \item exprs
+%%      \item se.exprs
+%%      \item nObservations
+%%      \item Detection
+%%    \end{itemize}
+
+%%  \item \texttt{featureData} matrix of \texttt{N} rows to hold probe annotation accessed using \texttt{fData}
+%%  \item \texttt{phenoData} matrix of \texttt{S} rows to hold sample annotation accessed using \texttt{pData}
+%%  \item \texttt{qcData} matrix of Metrics data, or any other QC.
+%%\end{itemize}
+ 
+%%\end{frame}
+
+
+%%\begin{frame}[fragile]{assayData}
+
+%%<<viewExprs, comment=NA>>=
+%%exprs(exampleSummaryData)[1:5,1:3]
+
+%%@
+
+%%\end{frame}
+%
+%%\begin{frame}[fragile]{featureData}
+
+
+%%<<fData, comment=NA>>=
+%%fData(exampleSummaryData)[1:5,]
+%%@
+
+%%\end{frame}
+
+
+%%\begin{frame}[fragile]{phenoData}
+
+
+%%<<pData, comment=NA>>=
+%%pData(exampleSummaryData)[1:3,]
+%%@
+
+%%\end{frame}
+
+
+%%\begin{frame}{Working with annotation}
+ 
+%%\begin{itemize}
+%%  \item Bioconductor has infrastructure for mapping between microarray probes and functional genomic annotation
+%%  \item Probes are assigned RefSeq IDs and these are used to map to other genomic features
+%%  \item \texttt{illuminaHumanv3.db} etc go beyond this and give access to probe-specific details
+%%  \item Typically the \texttt{mget} function is used to lookup the value of set of IDs from a defined mapping
+%%  \item \texttt{addFeatureData} is a shortcut to add probe annotations to a summary object
+%% \end{itemize}
+
+%%\end{frame}
+
+%%\begin{frame}{What happens next?}
+%%\begin{itemize}
+%%\item Various downstream tasks can be performed on normalised, summarised data
+%%\item Clustering, classification etc
+%%\item Pathways, functional enrichment
+%%\item Integration with other data types
+%%\item Should be possible with existing Bioconductor tools 
+%%\end{itemize}
+%%\end{frame}
+
+%%\section{Wrap-up}
+%%\begin{frame}{Wrap-up}
+
+%%\begin{itemize}
+%%\item BeadArray technology provides many attractive features to the analyst
+%%\item Principles from other microarrays still apply
+%% \begin{itemize}
+%%  \item Experimental Design
+%%  \item Quality Control
+%%  \item Normalisation
+%%  \item Annotation
+%%  \end{itemize} 
+%%\item Different starting points; be aware of bead-summary data limitations
+%%\item Bioconductor tools to suit all starting points
+
+%%\end{itemize}
+
+
+
+%%\end{frame}
+{
+\usebackgroundtemplate{\includegraphics[width=\paperwidth]{figs/balloons.jpg}}
+\begin{frame}{The End}
+Feel free to email \newline {\tt mark.dunning@cruk.cam.ac.uk} \newline
+
+Slides by \href{https://bitbucket.org/rivanvx/beamer/wiki/Home}{\underline{\color{blue}Beamer}} and \href{http://www.rstudio.com/}{\underline{\color{blue}RStudio}}
+
+\end{frame}
+}
+\end{document}
