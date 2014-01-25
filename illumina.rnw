@@ -70,7 +70,7 @@
 % - Keep it simple, no one is interested in your street address.
 
 \date[Short Occasion] % (optional)
-{MPhil in Computational Biology}
+{30th January 2014}
 
 \subject{Talks}
 % This is only inserted into the PDF information catalog. Can be left
