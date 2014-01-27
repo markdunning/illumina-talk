@@ -70,7 +70,7 @@
 % - Keep it simple, no one is interested in your street address.
 
 \date[Short Occasion] % (optional)
-{MPhil in Computational Biology}
+{30th January 2014}
 
 \subject{Talks}
 % This is only inserted into the PDF information catalog. Can be left
@@ -105,7 +105,7 @@
 
 \begin{document}
 {
-\usebackgroundtemplate{\includegraphics[width=\paperwidth]{figs/criBackdrop.jpg}}
+\usebackgroundtemplate{\includegraphics[width=\paperwidth]{images/criBackdrop.jpg}}
 \begin{frame}
   \titlepage
 \end{frame}
@@ -239,7 +239,7 @@ ggplot(arrays, aes(x = Q, y = value,fill=as.factor(Q))) + geom_bar(stat="identit
 \item Beads that have the same probe sequence are known as a \textit{bead-type}
 \item Beads are identified by Illumina using a decoding sequence
  \end{itemize}
-\includegraphics[height=4cm,width=6cm]{figs/abead}
+\includegraphics[height=4cm,width=6cm]{images/abead}
 \end{frame}
 
 \begin{frame}{Randomly-arranged arrays}
@@ -248,7 +248,7 @@ ggplot(arrays, aes(x = Q, y = value,fill=as.factor(Q))) + geom_bar(stat="identit
  \item The number of replicates of each bead-type follows a normal distribution
  \item Around 20 replicates on most-recent arrays
 \end{itemize}
-\includegraphics[height=4cm,width=6cm]{figs/beadarrangement}
+\includegraphics[height=4cm,width=6cm]{images/beadarrangement}
  
 \end{frame}
 
@@ -262,7 +262,7 @@ ggplot(arrays, aes(x = Q, y = value,fill=as.factor(Q))) + geom_bar(stat="identit
  \item Each chip also has an annotation 'version' (v1, v2, v3, v4)
 \end{itemize}
  \column{0.5\textwidth}
-\includegraphics[height=4cm,width=6cm]{figs/chiptypes}
+\includegraphics[height=4cm,width=6cm]{images/chiptypes}
 \end{columns}
 
 \end{frame}
@@ -270,12 +270,12 @@ ggplot(arrays, aes(x = Q, y = value,fill=as.factor(Q))) + geom_bar(stat="identit
 \begin{frame}{Example}
 Observations for Gene X on Illumina and older array technologies
 
-\includegraphics[height=8cm,width=12cm]{figs/BeadPositions}
+\includegraphics[height=8cm,width=12cm]{images/BeadPositions}
 \end{frame}
 
 \begin{frame}{Example}
 Consider a technical failure on one of the arrays
-\includegraphics[height=8cm,width=12cm]{figs/BeadPositionsWArtifact}
+\includegraphics[height=8cm,width=12cm]{images/BeadPositionsWArtifact}
 \end{frame}
 
 
@@ -283,7 +283,7 @@ Consider a technical failure on one of the arrays
 
 \begin{frame}[t]{Output formats}
 TIFF image representation of the array surface
-\includegraphics[height=5cm,width=10cm]{figs/nicearray}
+\includegraphics[height=5cm,width=10cm]{images/nicearray}
 
 \end{frame}
 
@@ -291,7 +291,7 @@ TIFF image representation of the array surface
 \begin{columns}
  \column{0.5\textwidth}
 A text description of the bead locations, unique to each array. 
-\includegraphics[height=6cm,width=4cm]{figs/beadleveltxt}
+\includegraphics[height=6cm,width=4cm]{images/beadleveltxt}
  \column{0.5\textwidth}
 Know as \textit{bead-level} data.
 \end{columns}
@@ -314,7 +314,7 @@ We will revisit these later...
 
 \begin{frame}{Summary-level data}
 Additionally, BeadStudio or GenomeStudio software can be used on the scanned data
-\includegraphics[height=4cm,width=10cm]{figs/BeadStudio}
+\includegraphics[height=4cm,width=10cm]{images/BeadStudio}
 
 
 \end{frame}
@@ -337,7 +337,7 @@ The analyst may have a choice over what data to take as a starting point
 
 
 \begin{frame}{Workflow Overview}
-\includegraphics[height=5cm,width=10cm]{figs/CombinedFigure1WithAnno}
+\includegraphics[height=5cm,width=10cm]{images/CombinedFigure1WithAnno}
 
 
 From \href{http://tinyurl.com/omdru97}{\underline{\color{blue}Ritchie et al}}
@@ -387,9 +387,9 @@ From \href{http://tinyurl.com/omdru97}{\underline{\color{blue}Ritchie et al}}
 \item P05 = 5th intensity percentile (y-axis)
 \item P95:P05 Ratio or signal to noise ratio, red line = ideal
 \end{itemize}
-\includegraphics[height=1.5cm,width=5cm]{figs/p95density}
+\includegraphics[height=1.5cm,width=5cm]{images/p95density}
 \column{.5\textwidth}
-\includegraphics[height=5cm,width=5cm]{figs/p95historical}
+\includegraphics[height=5cm,width=5cm]{images/p95historical}
 \end{columns}
 \end{frame}
 
@@ -407,7 +407,7 @@ From \href{http://tinyurl.com/omdru97}{\underline{\color{blue}Ritchie et al}}
  \item \textit{Usually we start with these values}
 \end{itemize}
 \column{.5\textwidth}
-\includegraphics[height=5cm,width=5cm]{figs/imageprocessing}
+\includegraphics[height=5cm,width=5cm]{images/imageprocessing}
 \end{columns}
 Full, gory, details in \href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2880029/}{\underline{\color{blue}Smith et al}}
 \end{frame}
@@ -424,15 +424,15 @@ Full, gory, details in \href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2880029
 \end{frame}
 
 \begin{frame}[t]{The good..} 
-\includegraphics[width=8cm,height=6cm]{figs/thegood}
+\includegraphics[width=8cm,height=6cm]{images/thegood}
 \end{frame}
 
 \begin{frame}[t]{The bad..}
-\includegraphics[width=8cm,height=6cm]{figs/thebad}
+\includegraphics[width=8cm,height=6cm]{images/thebad}
 \end{frame}
 
 \begin{frame}[t]{and the ugly..}
-\includegraphics[width=8cm,height=6cm]{figs/theugly}
+\includegraphics[width=8cm,height=6cm]{images/theugly}
 \end{frame}
 
 
@@ -536,7 +536,7 @@ p1
 
 Sometimes obvious artefacts can be apparent on the TIFF image itself
 
-\includegraphics[height=4cm,width=10cm]{figs/badarray}
+\includegraphics[height=4cm,width=10cm]{images/badarray}
 
 \textit{Would you trust any measurements taken on the right of this array?}
 \end{frame}
@@ -648,7 +648,7 @@ For each array...
 \subsection*{Summary level analysis}
 
 \begin{frame}
-\includegraphics[height=5cm,width=10cm]{figs/workflow.pdf}
+\includegraphics[height=5cm,width=10cm]{images/workflow.pdf}
 
 Entry-point for other microarray analysis packages
 \end{frame}
@@ -672,12 +672,12 @@ Entry-point for other microarray analysis packages
 
 
 \begin{frame}[t]{Quality Control - Summarised beads}
-\includegraphics[c,width=10cm,height=6cm]{figs/boxPlotNoNorm1}
+\includegraphics[c,width=10cm,height=6cm]{images/boxPlotNoNorm1}
 \end{frame}
 
 \begin{frame}[t]{Why normalise?}
 We want to be measuring \textit{biological} rather than \textit{technical} variation.
-\includegraphics[c,width=10cm,height=6cm]{figs/boxPlotNoNorm2}
+\includegraphics[c,width=10cm,height=6cm]{images/boxPlotNoNorm2}
 \end{frame}
 
 
@@ -923,7 +923,7 @@ See \href{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC3001098/}{\underline{\colo
 \item but they do a bad job (see right)
 \end{itemize}
 \column{.5\textwidth}
-\includegraphics[width=5cm,height=4cm]{figs/bgNorm}
+\includegraphics[width=5cm,height=4cm]{images/bgNorm}
 \end{columns}
 
 \end{frame}
@@ -978,185 +978,185 @@ See \href{http://www.nature.com/nrg/journal/v11/n10/abs/nrg2825.html}{\underline
 
 \end{frame}
 
-\section{Differential Expression Walkthrough}
-\begin{frame}[t]{Differential Gene Expression}
+%\section{Differential Expression Walkthrough}
+%\begin{frame}[t]{Differential Gene Expression}
 
-  \begin{columns}[c]
-  \column{.5\textwidth}
+%  \begin{columns}[c]
+%  \column{.5\textwidth}
 
-  \begin{itemize}
-  \item Differential expression is done on per-probe basis
-  \item Compare values in each sample group using (modified version of) 't-test'
-    \begin{itemize}
-    \item fold-change  
-    \item p-value
-    \item log-odds or B-statistic
-    \end{itemize}
+%  \begin{itemize}
+%  \item Differential expression is done on per-probe basis
+%  \item Compare values in each sample group using (modified version of) 't-test'
+%    \begin{itemize}
+%    \item fold-change  
+%    \item p-value
+%    \item log-odds or B-statistic
+%    \end{itemize}
 
-\end{itemize}
-  \column{.5\textwidth}
-\includegraphics[width=5cm, height=5cm]{figs/DEboxplot}
-  \end{columns}
-\end{frame}
+%\end{itemize}
+%  \column{.5\textwidth}
+%\includegraphics[width=5cm, height=5cm]{images/DEboxplot}
+%  \end{columns}
+%\end{frame}
 
-\begin{frame}[fragile]{1. Understanding the data}
-Normalised, processed data tend to be represented in a standard way in Bioconductor. 
+%\begin{frame}[fragile]{1. Understanding the data}
+%Normalised, processed data tend to be represented in a standard way in Bioconductor. 
 
-\begin{itemize}
-\item \texttt{assayData} a series of N by S matrices
- \begin{itemize}
-      \item exprs
-      \item se.exprs
+%\begin{itemize}
+%\item \texttt{assayData} a series of N by S matrices
+% \begin{itemize}
+%      \item exprs
+%      \item se.exprs
 
-    \end{itemize}
-\item \texttt{featureData} matrix of \texttt{N} rows to hold probe annotation accessed using \texttt{fData}
-\item \texttt{phenoData} matrix of \texttt{S} rows to hold sample annotation accessed using \texttt{pData}
-\end{itemize}
+%    \end{itemize}
+%\item \texttt{featureData} matrix of \texttt{N} rows to hold probe annotation accessed using \texttt{fData}
+%%\item \texttt{phenoData} matrix of \texttt{S} rows to hold sample annotation accessed using \texttt{pData}
+%\end{itemize}
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{assayData}
-<<echo=FALSE>>=
-normData <- normaliseIllumina(exampleSummaryData[,-c(7,8)])
-@
+%\begin{frame}[fragile]{assayData}
+%<<echo=FALSE>>=
+%normData <- normaliseIllumina(exampleSummaryData[,-c(7,8)])
+%@
 
-<<viewExprs, comment=NA>>=
-exprs(normData)[1:5,1:3]
+%<<viewExprs, comment=NA>>=
+%exprs(normData)[1:5,1:3]
 
-@
+%@
 
-\end{frame}
+%\end{frame}
+%
+%\begin{frame}[fragile]{featureData}
+%Each row matches a row in the expression matrix. Can have as many columns as you like.
 
-\begin{frame}[fragile]{featureData}
-Each row matches a row in the expression matrix. Can have as many columns as you like.
+%<<fData, comment=NA>>=
+%fData(normData)[1:5,]
+%@
 
-<<fData, comment=NA>>=
-fData(normData)[1:5,]
-@
+%\end{frame}
+%
+%\begin{frame}[fragile]{phenoData}
+%Each row matches a \textbf{column} in the expression matrix. Can have as many columns as you like. Sample group information is commonly stored in this matrix.
 
-\end{frame}
+%<<pData, comment=NA>>=
+%pData(normData)[1:3,]
+%@
 
-\begin{frame}[fragile]{phenoData}
-Each row matches a \textbf{column} in the expression matrix. Can have as many columns as you like. Sample group information is commonly stored in this matrix.
+%\end{frame}
 
-<<pData, comment=NA>>=
-pData(normData)[1:3,]
-@
-
-\end{frame}
-
-\begin{frame}[fragile]{2. Build the design matrix}
-In my analysis I want to compare Brain and UHRR groups
-<<warning=FALSE,message=FALSE>>=
-library(limma)
-grps <- pData(normData)[,2]
-grps
-design <- model.matrix(~0+as.factor(grps))
-head(design)
-colnames(design) <- c("Brain", "UHRR")
-@
+%\begin{frame}[fragile]{2. Build the design matrix}
+%In my analysis I want to compare Brain and UHRR groups
+%<<warning=FALSE,message=FALSE>>=
+%library(limma)
+%grps <- pData(normData)[,2]
+%grps
+%design <- model.matrix(~0+as.factor(grps))
+%head(design)
+%colnames(design) <- c("Brain", "UHRR")
+%@
 
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{3. Fit the linear model}
-Fit the linear model to the expression matrix
-<<>>=
-fit <- lmFit(exprs(normData), design)
-fit
-names(fit)
-head(fit$coefficients,2)
+%\begin{frame}[fragile]{3. Fit the linear model}
+%Fit the linear model to the expression matrix
+%<<>>=
+%fit <- lmFit(exprs(normData), design)
+%fit
+%names(fit)
+%head(fit$coefficients,2)
 
-@
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{3. Fit the linear model}
-Fit the linear model to the expression matrix
-<<>>=
-names(fit)
-head(fit$coefficients,2)
+%\begin{frame}[fragile]{3. Fit the linear model}
+%Fit the linear model to the expression matrix
+%<<>>=
+%%names(fit)
+%head(fit$coefficients,2)
 
-@
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{A sanity check}
+%\begin{frame}[fragile]{A sanity check}
 
-<<>>=
-grps
-mean(exprs(normData)[1,1:6])
-mean(exprs(normData)[1,7:10])
-fit$coefficients[1,]
-@
+%<<>>=
+%grps
+%mean(exprs(normData)[1,1:6])
+%mean(exprs(normData)[1,7:10])
+%fit$coefficients[1,]
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{4. Make the contrast Matrix}
-<<>>=
-cMat <- makeContrasts(DE = Brain - UHRR, levels=design)
-cMat
-fit2 <- contrasts.fit(fit, cMat)
-head(fit2$coefficients,2)
-@
+%\begin{frame}[fragile]{4. Make the contrast Matrix}
+%<<>>=
+%cMat <- makeContrasts(DE = Brain - UHRR, levels=design)
+%cMat
+%fit2 <- contrasts.fit(fit, cMat)
+%%head(fit2$coefficients,2)
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]
-<<>>=
-head(fit2$coefficients,2)
-fit$coefficients[1:2,1] - fit$coefficients[1:2,2]
-@
+%\begin{frame}[fragile]
+%%<<>>=
+%head(fit2$coefficients,2)
+%fit$coefficients[1:2,1] - fit$coefficients[1:2,2]
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{5. Annotate}
-For convenience, we attach the probe annotations to the data.
-<<>>=
-fit2$genes <- fData(normData)
-@
-How we dervie the annotations will be the subject of the next section...
-\end{frame}
+%\begin{frame}[fragile]{5. Annotate}
+%For convenience, we attach the probe annotations to the data.
+%<<>>=
+%fit2$genes <- fData(normData)
+%@
+%How we dervie the annotations will be the subject of the next section...
+%\end{frame}
 
-\begin{frame}[fragile]{5. Do the Empirical Bayes}
+%\begin{frame}[fragile]{5. Do the Empirical Bayes}
 
-<<>>=
-efit <- eBayes(fit2)
-names(efit)
-@
+%<<>>=
+%efit <- eBayes(fit2)
+%%names(efit)
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{6. Tabulate the results}
+%\begin{frame}[fragile]{6. Tabulate the results}
 
-<<>>=
-topTable(efit,n=2)
-@
+%<<>>=
+%topTable(efit,n=2)
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{7. Visualise}
+%\begin{frame}[fragile]{7. Visualise}
 
-<<fig.width=10,fig.height=5>>=
-volcanoplot(efit)
-@
+%<<fig.width=10,fig.height=5>>=
+%volcanoplot(efit)
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]{Another sanity check}
-<<fig.width=10,fig.height=5>>=
-boxplot(exprs(normData)["ILMN_1675947",]~grps)
-@
+%\begin{frame}[fragile]{Another sanity check}
+%<<fig.width=10,fig.height=5>>=
+%boxplot(exprs(normData)["ILMN_1675947",]~grps)
+%@
 
-\end{frame}
+%\end{frame}
 
-\begin{frame}[fragile]
-<<fig.width=10,fig.height=5>>=
-topDE <- order(efit$lods,decreasing=T)[1:100]
-heatmap(as.matrix(exprs(normData)[topDE,]))
-@
+%\begin{frame}[fragile]
+%%<<fig.width=10,fig.height=5>>=
+%topDE <- order(efit$lods,decreasing=T)[1:100]
+%heatmap(as.matrix(exprs(normData)[topDE,]))
+%@
 
-\end{frame}
+%\end{frame}
 
 %\begin{frame}[t]{Array Weights}
 %\begin{columns}
@@ -1206,9 +1206,9 @@ heatmap(as.matrix(exprs(normData)[topDE,]))
 %%\item Annotation can be added to different expression output
 %%\end{itemize}
 
-%%\includegraphics[width=10cm,height=2cm]{figs/genelist}
+%%\includegraphics[width=10cm,height=2cm]{images/genelist}
 
-%%\includegraphics[width=10cm,height=2cm]{figs/genelist2}
+%%\includegraphics[width=10cm,height=2cm]{images/genelist2}
 
 %%\textbf{What if probes for the same gene disagree?}
  
@@ -1226,7 +1226,7 @@ heatmap(as.matrix(exprs(normData)[topDE,]))
 %\item 'Normal-like'
 \end{itemize}
 \column{.5\textwidth}
-\includegraphics[width=5cm,height=5cm]{figs/classification}
+\includegraphics[width=5cm,height=5cm]{images/classification}
 
 \end{columns}
 \end{frame} 
@@ -1241,28 +1241,28 @@ heatmap(as.matrix(exprs(normData)[topDE,]))
  \item Simple approach would be to average values for all three probes
 \end{itemize}
 \column{.5\textwidth}
-\includegraphics[width=5cm,height=5cm]{figs/erbb2levels}
+\includegraphics[width=5cm,height=5cm]{images/erbb2levels}
 \end{columns} 
 
 \end{frame}
 
 \begin{frame}{Location of ERBB2 probes}
 
-\includegraphics[width=10cm,height=5cm]{figs/erbb2probes}
+\includegraphics[width=10cm,height=5cm]{images/erbb2probes}
  
 
 \end{frame}
 
 \begin{frame}{Difference between subtypes}
-\includegraphics[width=10cm,height=5cm]{figs/erbb2subtypes}
+\includegraphics[width=10cm,height=5cm]{images/erbb2subtypes}
 \end{frame}
 
 \begin{frame}{Using external data}
-\includegraphics[width=10cm,height=5cm]{figs/erbb2heatmaps}
+\includegraphics[width=10cm,height=5cm]{images/erbb2heatmaps}
 \end{frame}
 
 \begin{frame}[t]{An annotation pipeline}
-\includegraphics[width=10cm,height=5cm]{figs/annotPipeline}
+\includegraphics[width=10cm,height=5cm]{images/annotPipeline}
 \end{frame}
 
 <<annotBoxplot, echo=FALSE, eval=TRUE>>=
@@ -1289,7 +1289,7 @@ fData(someArrays) <- cbind(fData(someArrays), Quality)
 \item Associations also possible due to SNPs within probes
 \end{itemize}
 \column{.5\textwidth}
-\includegraphics[width=5cm,height=5cm]{figs/IntensityvsAnnot}
+\includegraphics[width=5cm,height=5cm]{images/IntensityvsAnnot}
 \end{columns}
 \end{frame}
 
@@ -1309,16 +1309,16 @@ fData(someArrays) <- cbind(fData(someArrays), Quality)
 Similar issues for \href{http://nar.oxfordjournals.org/content/33/20/e175.full}{\underline{\color{blue}Affymetrix}} arrays
 \end{frame}
 
-\begin{frame}[fragile]{In practice}
-What I \textit{should} have done before
+%\begin{frame}[fragile]{In practice}
+%What I \textit{should} have done before
 
-<<>>=
-quals <- fData(normData)$PROBEQUALITY
-bestProbes <- quals == "Perfect"
-fit.new <- lmFit(exprs(normData)[bestProbes,], design)
+%<<>>=
+%quals <- fData(normData)$PROBEQUALITY
+%bestProbes <- quals == "Perfect"
+%fit.new <- lmFit(exprs(normData)[bestProbes,], design)
 
-@
-\end{frame}
+%@
+%\end{frame}
 
 \begin{frame}{Where does the annotation come from?}
 
@@ -1514,7 +1514,7 @@ fit.new <- lmFit(exprs(normData)[bestProbes,], design)
 
 %%\end{frame}
 {
-\usebackgroundtemplate{\includegraphics[width=\paperwidth]{figs/balloons.jpg}}
+\usebackgroundtemplate{\includegraphics[width=\paperwidth]{images/balloons.jpg}}
 \begin{frame}{The End}
 Feel free to email \newline {\tt mark.dunning@cruk.cam.ac.uk} \newline
 
