@@ -70,7 +70,11 @@
 % - Keep it simple, no one is interested in your street address.
 
 \date[Short Occasion] % (optional)
+<<<<<<< HEAD
 {29th October 2014}
+=======
+{30th January 2014}
+>>>>>>> 55b38a664336fcdff070dcc34b74c6b1c387982a
 
 \subject{Talks}
 % This is only inserted into the PDF information catalog. Can be left
